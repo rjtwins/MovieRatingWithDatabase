@@ -1,19 +1,19 @@
-﻿using System.Collections.Generic;
-using MovieRatingWithDatabase;
+﻿using MovieRatingWithDatabase;
+
 public interface IDatabaseInterface
 {
-    /// <summary>
-    /// Get a row with a specific key from database and return it as a row in ResultDataSet.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns>ResultDataSet.resultRow row</returns>
-    ResultDataSet.resultRow GetFromDatabase(string id);
     /// <summary>
     /// Get all (rows) data in database and return it as a ResultDataSet table.
     /// </summary>
     /// <returns>ResultDataSet.resultDataTable table</returns>
     ResultDataSet.resultDataTable GetAllFromDatabase();
 
+    /// <summary>
+    /// Get a row with a specific key from database and return it as a row in ResultDataSet.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>ResultDataSet.resultRow row</returns>
+    ResultDataSet.resultRow GetFromDatabase(string id);
     /// <summary>
     /// Put a given row in the database.
     /// </summary>
@@ -32,6 +32,7 @@ public interface IDatabaseInterface
     /// </summary>
     /// <param name="id"></param>
     void TryRemoveFromDatabase(string id);
+
     /// <summary>
     /// Update given (row) entry in database
     /// </summary>

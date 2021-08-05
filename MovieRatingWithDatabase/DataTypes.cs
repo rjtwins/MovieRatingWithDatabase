@@ -82,14 +82,15 @@ public class Root
 
     [JsonProperty("@type")]
     public string Type { get; set; }
+
     public string query { get; set; }
     public List<Result> results { get; set; }
     public List<string> types { get; set; }
 }
 
 public class Passwords
-{ 
-    public string xrapidapikey {get; set;}
+{
+    public string xrapidapikey { get; set; }
     public string SQLAccountName { get; set; }
     public string SQLPassword { get; set; }
     public string SQLAdrress { get; set; }

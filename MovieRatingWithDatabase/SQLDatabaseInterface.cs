@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
 
 namespace MovieRatingWithDatabase
 {
-    class SQLDatabaseInterface : IDatabaseInterface
+    internal class SQLDatabaseInterface : IDatabaseInterface
     {
         private ResultDataSetTableAdapters.resultTableAdapter ResultAdaptor = new ResultDataSetTableAdapters.resultTableAdapter();
 
@@ -19,6 +18,18 @@ namespace MovieRatingWithDatabase
 
             ResultAdaptor.Connection = new SqlConnection(connectionString);
         }
+
+        public ResultDataSet.resultDataTable GetAllFromDatabase()
+        {
+            var data = ResultAdaptor.GetData();
+            foreach (ResultDataSet.resultRow row in data)
+            {
+                Debug.WriteLine(row.title);
+            }
+
+            return ResultAdaptor.GetData();
+        }
+
         ResultDataSet.resultRow IDatabaseInterface.GetFromDatabase(string id)
         {
             var rows = ResultAdaptor.GetData().Rows;
@@ -48,7 +59,6 @@ namespace MovieRatingWithDatabase
             ResultDataSet newDataSet = new ResultDataSet();
             for (int i = 0; i < ResultDataSet.result.Rows.Count; i++)
             {
-
                 foreach (var column in ResultDataSet.result.Rows[i].ItemArray)
                 {
                     if (NewDataSetAllreadyContainsKey(i))
@@ -84,18 +94,6 @@ namespace MovieRatingWithDatabase
         {
             ResultAdaptor.DeleteQuery(id);
         }
-
-        public ResultDataSet.resultDataTable GetAllFromDatabase()
-        {
-            var data = ResultAdaptor.GetData();
-            foreach(ResultDataSet.resultRow row in data)
-            {
-                Debug.WriteLine(row.title);
-            }
-
-            return ResultAdaptor.GetData();
-        }
-
         public void UpdateInDatabase(ResultDataSet.resultRow resultRow)
         {
             //foreach (var c in resultRow.ItemArray)
@@ -121,6 +119,5 @@ namespace MovieRatingWithDatabase
                 );
             Debug.WriteLine("Update result: " + result);
         }
-
     }
 }

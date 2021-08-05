@@ -1,5 +1,5 @@
-﻿
-using System.Diagnostics;
+﻿using System.Diagnostics;
+
 namespace MovieRatingWithDatabase.ResultDataSetTableAdapters
 {
     public partial class resultTableAdapter
@@ -13,7 +13,7 @@ namespace MovieRatingWithDatabase.ResultDataSetTableAdapters
             global::System.Data.SqlClient.SqlCommand command = this.CommandCollection[1];
             for (int i = 0; i < arguments.Length; i++)
             {
-                System.Data.SqlClient.SqlParameter parameter = this.Adapter.InsertCommand.Parameters[i+1];
+                System.Data.SqlClient.SqlParameter parameter = this.Adapter.InsertCommand.Parameters[i + 1];
                 object argument = arguments[i];
                 Debug.WriteLine("Argument content" + argument.ToString());
                 Debug.WriteLine("Argument: " + argument.GetType());
@@ -51,8 +51,6 @@ namespace MovieRatingWithDatabase.ResultDataSetTableAdapters
             return returnValue;
         }
 
-
-
         /// <summary>
         /// Very unsafe with very little safty checks, use at own risk!
         /// When given a list of objects incasulating columns values in a row in the correct order and type, will insert the row.
@@ -83,7 +81,6 @@ namespace MovieRatingWithDatabase.ResultDataSetTableAdapters
                 parameter.Value = argument;
             }
 
-
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
             if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open)
                         != global::System.Data.ConnectionState.Open))
@@ -105,10 +102,9 @@ namespace MovieRatingWithDatabase.ResultDataSetTableAdapters
         }
     }
 }
+
 namespace MovieRatingWithDatabase
 {
-
-
     partial class ResultDataSet
     {
     }

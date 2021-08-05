@@ -2,24 +2,42 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MovieRatingWithDatabase
 {
-    class DataController : IDataController
+    internal class DataController : IDataController
     {
-        HttpClient Client = new HttpClient();
+        private HttpClient Client = new HttpClient();
 
         public DataController() : base()
         {
             this.LoadPasswordFile();
             base.DatabaseInterface = new SQLDatabaseInterface();
+        }
+
+        public override void LoadPasswordFile()
+        {
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            try
+            {
+                UTILS.Passwords = JsonConvert.DeserializeObject<Passwords>(File.ReadAllText(baseDir + @"Passwords.end"));
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Password File could not be found or loaded!");
+                Debug.WriteLine(baseDir + @"Passwords.end");
+                Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.StackTrace);
+                UTILS.Passwords = new Passwords();
+            }
+        }
+
+        public override Result SearchWebByID(string id)
+        {
+            return new Result();
         }
 
         public override List<Result> SearchWebByTitle(string title)
@@ -73,47 +91,9 @@ namespace MovieRatingWithDatabase
             return Results;
         }
 
-        private void AddBitmapsToResults(List<Result> results)
-        {
-            if (StopSearchFlag)
-            {
-                return;
-            }
-
-            foreach(Result r in results)
-            {
-                if (StopSearchFlag)
-                {
-                    return;
-                }
-
-                if(r.image == null)
-                {
-                    continue;
-                }
-
-                if (string.IsNullOrEmpty(r.image.url))
-                {
-                    continue;
-                }
-                r.bitMap = GetBitMapFromURL(r.image.url).Result;
-                r.imageUrl = r.image.url;
-            }
-        }
-
-        private void SanitizeResults(List<Result> input)
-        {
-            if (StopSearchFlag)
-            {
-                return;
-            }
-            RemoveNoMovieOrTv(input);
-            ProcessIDString(input);
-        }
-
         private static void ProcessIDString(List<Result> input)
         {
-            foreach(Result r in input)
+            foreach (Result r in input)
             {
                 string id = r.id;
                 string[] splitId = r.id.Split('/');
@@ -126,9 +106,32 @@ namespace MovieRatingWithDatabase
             input.RemoveAll(r => (r.titleType != "tvSeries" && r.titleType != "movie"));
         }
 
-        public override Result SearchWebByID(string id)
+        private void AddBitmapsToResults(List<Result> results)
         {
-            return new Result();
+            if (StopSearchFlag)
+            {
+                return;
+            }
+
+            foreach (Result r in results)
+            {
+                if (StopSearchFlag)
+                {
+                    return;
+                }
+
+                if (r.image == null)
+                {
+                    continue;
+                }
+
+                if (string.IsNullOrEmpty(r.image.url))
+                {
+                    continue;
+                }
+                r.bitMap = GetBitMapFromURL(r.image.url).Result;
+                r.imageUrl = r.image.url;
+            }
         }
 
         private async Task<Root> MakeCallAsync(HttpRequestMessage request)
@@ -151,21 +154,14 @@ namespace MovieRatingWithDatabase
             return JsonConvert.DeserializeObject<Root>(body);
         }
 
-        public override void LoadPasswordFile()
+        private void SanitizeResults(List<Result> input)
         {
-            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            try
+            if (StopSearchFlag)
             {
-                UTILS.Passwords = JsonConvert.DeserializeObject<Passwords>(File.ReadAllText(baseDir + @"Passwords.end"));
+                return;
             }
-            catch(Exception e)
-            {
-                Debug.WriteLine("Password File could not be found or loaded!");
-                Debug.WriteLine(baseDir + @"Passwords.end");
-                Debug.WriteLine(e.Message);
-                Debug.WriteLine(e.StackTrace);
-                UTILS.Passwords = new Passwords();
-            }
+            RemoveNoMovieOrTv(input);
+            ProcessIDString(input);
         }
     }
 }

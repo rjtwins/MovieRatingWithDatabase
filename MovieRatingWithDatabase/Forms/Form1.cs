@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MovieRatingWithDatabase
@@ -16,12 +10,13 @@ namespace MovieRatingWithDatabase
         public ImageList ImageList = new ImageList();
         public ImageList BookmarkImageList = new ImageList();
 
-        IController Controller;
+        private IController Controller;
 
         public Form1()
         {
             InitializeComponent();
         }
+
         private void Form1_Load(object sender, EventArgs e)
         {
             this.ImageList.ImageSize = new Size(128, 128);
@@ -44,6 +39,7 @@ namespace MovieRatingWithDatabase
 
             return list;
         }
+
         private List<Control> GetAllControls(Control container)
         {
             return GetAllControls(container, new List<Control>() { container });
@@ -71,7 +67,7 @@ namespace MovieRatingWithDatabase
             //this.PrivateDisplayListView.Items.Clear();
 
             for (int i = 0; i < results.Count; i++)
-            { 
+            {
                 //UTILS.DisplayFullBitmap(results[i].bitMap);
                 Result r = results[i];
                 AddBookmarkBitmap(r);
@@ -129,7 +125,7 @@ namespace MovieRatingWithDatabase
         /// <param name="e"></param>
         private void waterMarkTextBox1_TextChanged(object sender, EventArgs e)
         {
-            if(waterMarkTextBox1.Text.Length > 0 && timer1.Enabled)
+            if (waterMarkTextBox1.Text.Length > 0 && timer1.Enabled)
             {
                 timer1.Stop();
                 timer1.Interval = 1500;
@@ -159,7 +155,6 @@ namespace MovieRatingWithDatabase
                 return;
             }
             Controller.HandlPrivateSearchString(waterMarkTextBox1.Text);
-
         }
 
         private void HandlePublicSearch()
@@ -202,12 +197,10 @@ namespace MovieRatingWithDatabase
 
         private void tabPage2_Click(object sender, EventArgs e)
         {
-
         }
 
         private void PrivateDisplayListView_SelectedIndexChanged(object sender, EventArgs e)
         {
-
         }
 
         public void RemovePrivateResult(string id)
@@ -216,13 +209,15 @@ namespace MovieRatingWithDatabase
         }
     }
 
-    class WaterMarkTextBox : TextBox
+    internal class WaterMarkTextBox : TextBox
     {
         private Font oldFont = null;
         private Boolean waterMarkTextEnabled = false;
 
-        #region Attributes 
+        #region Attributes
+
         private Color _waterMarkColor = Color.Gray;
+
         public Color WaterMarkColor
         {
             get { return _waterMarkColor; }
@@ -234,12 +229,14 @@ namespace MovieRatingWithDatabase
         }
 
         private string _waterMarkText = "Water Mark";
+
         public string WaterMarkText
         {
             get { return _waterMarkText; }
             set { _waterMarkText = value; Invalidate(); }
         }
-        #endregion
+
+        #endregion Attributes
 
         //Default constructor
         public WaterMarkTextBox()
@@ -260,7 +257,7 @@ namespace MovieRatingWithDatabase
             // Use the same font that was defined in base class
             System.Drawing.Font drawFont = new System.Drawing.Font(Font.FontFamily,
                 Font.Size, Font.Style, Font.Unit);
-            //Create new brush with gray color or 
+            //Create new brush with gray color or
             SolidBrush drawBrush = new SolidBrush(WaterMarkColor);//use Water mark color
             //Draw Text or WaterMark
             args.Graphics.DrawString((waterMarkTextEnabled ? WaterMarkText : Text),
@@ -275,7 +272,7 @@ namespace MovieRatingWithDatabase
                 this.TextChanged += new System.EventHandler(this.WaterMark_Toggel);
                 this.LostFocus += new System.EventHandler(this.WaterMark_Toggel);
                 this.FontChanged += new System.EventHandler(this.WaterMark_FontChanged);
-                //No one of the above events will start immeddiatlly 
+                //No one of the above events will start immeddiatlly
                 //TextBox control still in constructing, so,
                 //Font object (for example) couldn't be catched from within
                 //WaterMark_Toggle

@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MovieRatingWithDatabase
@@ -14,12 +7,12 @@ namespace MovieRatingWithDatabase
     {
         private IController controller;
         private Result result;
+
         public Form2()
         {
             InitializeComponent();
             Form2 form = this;
             this.FormClosing += new FormClosingEventHandler(OnFormClosingEvent);
-
         }
 
         public void AddDetails(Result r)
@@ -66,7 +59,6 @@ namespace MovieRatingWithDatabase
 
         private void Form2_Load(object sender, EventArgs e)
         {
-
         }
 
         public void RegisterController(IController controller)
