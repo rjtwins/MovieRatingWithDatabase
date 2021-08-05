@@ -50,7 +50,7 @@ namespace MovieRatingWithDatabase
             title = Uri.EscapeDataString(title);
             List<Result> Results = null;
             Debug.WriteLine(UTILS.Passwords.SQLAccountName);
-            Debug.WriteLine(UTILS.Passwords.SQLAdrress);
+            Debug.WriteLine(UTILS.Passwords.sqlAddress);
             Debug.WriteLine(UTILS.Passwords.SQLPassword);
             Debug.WriteLine(UTILS.Passwords.xrapidapikey);
             try

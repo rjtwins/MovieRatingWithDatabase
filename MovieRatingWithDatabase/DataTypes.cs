@@ -93,5 +93,5 @@ public class Passwords
     public string xrapidapikey { get; set; }
     public string SQLAccountName { get; set; }
     public string SQLPassword { get; set; }
-    public string SQLAdrress { get; set; }
+    public string sqlAddress { get; set; }
 }
