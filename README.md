@@ -16,4 +16,4 @@ Password.end should have the following format:
   "sqlAddress "localhost" 
 }
 
-currently only localhost is supported as a sqlAddress.
+Currently only localhost is supported as a sqlAddress.
