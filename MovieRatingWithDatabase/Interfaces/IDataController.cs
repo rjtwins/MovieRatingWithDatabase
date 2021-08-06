@@ -1,5 +1,6 @@
 ﻿using MovieRatingWithDatabase;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Net;
@@ -8,7 +9,6 @@ using System.Threading.Tasks;
 internal abstract class IDataController
 {
     public IDatabaseInterface DatabaseInterface;
-    private protected ResultDataSet DataSet = new ResultDataSet();
     private protected bool StopSearchFlag = false;
 
     /// <summary>
@@ -27,7 +27,7 @@ internal abstract class IDataController
     {
         List<Result> results = new List<Result>();
         var dataTable = DatabaseInterface.GetAllFromDatabase();
-        foreach (ResultDataSet.resultRow row in dataTable.Rows)
+        foreach (DataRow row in dataTable.Rows)
         {
             Result r = UTILS.RowToResult(row);
             results.Add(r);
@@ -42,7 +42,6 @@ internal abstract class IDataController
     /// <returns>Task<Bitmap> getBitmapTask</Bitmap></returns>
     public async virtual Task<Bitmap> GetBitMapFromURL(string url)
     {
-        Debug.WriteLine("image URL:" + url);
         WebRequest requ = WebRequest.Create(url);
         WebResponse resp = await requ.GetResponseAsync();
         System.IO.Stream respStream = resp.GetResponseStream();
@@ -58,7 +57,7 @@ internal abstract class IDataController
     /// <returns>Result result</returns>
     public virtual Result GetFromDatabase(string id)
     {
-        ResultDataSet.resultRow row = DatabaseInterface.GetFromDatabase(id);
+        DataRow row = DatabaseInterface.GetFromDatabase(id);
         return UTILS.RowToResult(row);
     }
 
@@ -81,7 +80,7 @@ internal abstract class IDataController
     public virtual List<Result> SearchDatabase(string title)
     {
         List<Result> results = new List<Result>();
-        foreach (ResultDataSet.resultRow row in DatabaseInterface.SearchInDatabase(title).Rows)
+        foreach (DataRow row in DatabaseInterface.SearchInDatabase(title))
         {
             results.Add(UTILS.RowToResult(row));
         }
@@ -115,7 +114,7 @@ internal abstract class IDataController
     /// <param name="r"></param>
     public virtual void StoreResultInDatabase(Result r)
     {
-        DatabaseInterface.PutInDatabase(UTILS.ResultToRow(r));
+        DatabaseInterface.PutInDatabase(UTILS.ResultItemArray(r));
     }
     /// <summary>
     /// Update given result in database.
@@ -123,6 +122,6 @@ internal abstract class IDataController
     /// <param name="r"></param>
     public virtual void UpdateInDatabase(Result r)
     {
-        DatabaseInterface.UpdateInDatabase(UTILS.ResultToRow(r));
+        DatabaseInterface.UpdateInDatabase(UTILS.ResultItemArray(r));
     }
 }

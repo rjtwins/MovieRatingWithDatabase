@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -31,15 +32,23 @@ namespace MovieRatingWithDatabase
             return value;
         }
 
-        public static ResultDataSet.resultRow ResultToRow(Result result)
+        public static object[] ResultItemArray(Result result)
         {
-            ResultDataSet template = new ResultDataSet();
-            ResultDataSet.resultRow newRow = template.result.NewresultRow();
-            string[] propertyNames = new string[template.result.Columns.Count];
-
-            for (int i = 0; i < template.result.Columns.Count; i++)
+            if(SQLDatabaseInterface.SqlDataColumns == null)
             {
-                string columnName = template.result.Columns[i].ColumnName;
+                throw new Exception("SQLSchema was not loaded yet please make sure to load that first.");
+            }
+            if(SQLDatabaseInterface.SqlDataColumns.Count == 0)
+            {
+                throw new Exception("SQLSchema countains no columns.");
+            }
+
+            int nrColumns = SQLDatabaseInterface.SqlDataColumns.Count;
+            object[] itemArray = new object[nrColumns];
+
+            for (int i = 0; i < nrColumns; i++)
+            {
+                string columnName = SQLDatabaseInterface.SqlDataColumns[i].ColumnName;
                 var propInfo = result.GetType().GetProperty(columnName);
                 if (propInfo == null)
                 {
@@ -48,33 +57,31 @@ namespace MovieRatingWithDatabase
                 var value = propInfo.GetValue(result);
                 if (value != DBNull.Value && value != null)
                 {
-                    newRow[i] = value;
+                    itemArray[i] = value;
                     continue;
                 }
                 if (propInfo.PropertyType == typeof(string))
                 {
-                    newRow[i] = "";
+                    itemArray[i] = "";
                     continue;
                 }
                 if (propInfo.PropertyType == typeof(int))
                 {
-                    newRow[i] = 0;
+                    itemArray[i] = 0;
                     continue;
                 }
-                //Debug.WriteLine("Matching: " + columnName + " value: " + newRow[i]);
             }
-            return newRow;
+            return itemArray;
         }
 
-        public static Result RowToResult(ResultDataSet.resultRow row)
-        {
+        public static Result RowToResult(DataRow row)
+        {            
             Result result = new Result();
-            ResultDataSet template = new ResultDataSet();
-            string[] propertyNames = new string[template.result.Columns.Count];
+            string[] propertyNames = new string[row.Table.Columns.Count];
 
-            for (int i = 0; i < template.result.Columns.Count; i++)
+            for (int i = 0; i < propertyNames.Length; i++)
             {
-                string columnName = template.result.Columns[i].ColumnName;
+                string columnName = row.Table.Columns[i].ColumnName;
                 var propInfo = result.GetType().GetProperty(columnName);
                 //Debug.WriteLine("Matching: " + columnName + " value: " + row[i]);
                 if (propInfo == null)

@@ -55,19 +55,13 @@ public class Result
     public string id { get; set; }
     public Image image { get; set; }
     public Bitmap bitMap { get; set; }
-    public int runningTimeInMinutes { get; set; }
-    public string nextEpisode { get; set; }
-    public int numberOfEpisodes { get; set; }
     public int seriesEndYear { get; set; }
     public int seriesStartYear { get; set; }
     public string title { get; set; }
     public string titleType { get; set; }
     public int year { get; set; }
-    public List<Principal> principals { get; set; }
-    public int episode { get; set; }
+    //public int episode { get; set; }
     public int season { get; set; }
-    public ParentTitle parentTitle { get; set; }
-    public string previousEpisode { get; set; }
     public int rating { get; set; }
     public string notes { get; set; }
     public string watched { get; set; }
@@ -93,5 +87,8 @@ public class Passwords
     public string xrapidapikey { get; set; }
     public string SQLAccountName { get; set; }
     public string SQLPassword { get; set; }
-    public string sqlAddress { get; set; }
+    public string SQLAddress { get; set; }
+
+    public string SQLPort { get; set; }
+    public string SQLDatabase { get; set; }
 }

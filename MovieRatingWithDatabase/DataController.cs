@@ -27,11 +27,10 @@ namespace MovieRatingWithDatabase
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Password File could not be found or loaded!");
-                Debug.WriteLine(baseDir + @"Passwords.end");
-                Debug.WriteLine(e.Message);
-                Debug.WriteLine(e.StackTrace);
-                UTILS.Passwords = new Passwords();
+                throw new Exception("Password File could not be found or could not be loaded at: " + 
+                    baseDir + @"Passwords.end" +
+                    "\n" + e.Message + 
+                    "\n" + e.StackTrace);
             }
         }
 
@@ -49,10 +48,6 @@ namespace MovieRatingWithDatabase
 
             title = Uri.EscapeDataString(title);
             List<Result> Results = null;
-            Debug.WriteLine(UTILS.Passwords.SQLAccountName);
-            Debug.WriteLine(UTILS.Passwords.sqlAddress);
-            Debug.WriteLine(UTILS.Passwords.SQLPassword);
-            Debug.WriteLine(UTILS.Passwords.xrapidapikey);
             try
             {
                 var request = new HttpRequestMessage

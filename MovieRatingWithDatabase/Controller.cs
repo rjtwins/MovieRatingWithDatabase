@@ -91,7 +91,6 @@ namespace MovieRatingWithDatabase
             IDetailedDisplay detailsDisplay = new Form2();
             detailsDisplay.RegisterController(this);
             detailsDisplay.AddDetails(Bookmarks[id]);
-            Debug.WriteLine(Bookmarks[id].watched);
             detailsDisplay.Show();
         }
 
@@ -201,7 +200,6 @@ namespace MovieRatingWithDatabase
             for (int i = 0; i < temp.Count; i++)
             {
                 var r = temp[i];
-                Debug.WriteLine(r.title + " : " + r.id);
                 ResultsInMemory[r.id] = r;
                 SearchIndexToIdDict[i] = r.id;
             }

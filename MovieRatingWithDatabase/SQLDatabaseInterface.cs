@@ -1,67 +1,102 @@
-﻿using System;
+﻿using MySqlConnector;
+using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace MovieRatingWithDatabase
 {
     internal class SQLDatabaseInterface : IDatabaseInterface
     {
-        private ResultDataSetTableAdapters.resultTableAdapter ResultAdaptor = new ResultDataSetTableAdapters.resultTableAdapter();
+        //This is used to dynamically fill and create new rows based in object property names and types.
+        public static DataColumnCollection SqlDataColumns;
+
+        private MySqlDataAdapter SQLDataAdaptor;
+        private DataTable InternalDataTable = new DataTable();
+        private MySqlConnection cnx;
 
         public SQLDatabaseInterface()
         {
-            string connectionString =
-                "Data Source=DESKTOP-MQNG1EF;" +
-                "Initial Catalog=DummyDatabase;" +
-                "User id=" + UTILS.Passwords.SQLAccountName + ";" +
-                "Password=" + UTILS.Passwords.SQLPassword + ";";
+            //Debug.WriteLine(UTILS.Passwords.SQLAccountName);
+            //Debug.WriteLine(UTILS.Passwords.SQLDatabase);
+            //Debug.WriteLine(UTILS.Passwords.SQLAddress);
+            //Debug.WriteLine(UTILS.Passwords.SQLPort);
+            //Debug.WriteLine(UTILS.Passwords.SQLPassword);
+            //Debug.WriteLine(UTILS.Passwords.xrapidapikey);
 
-            ResultAdaptor.Connection = new SqlConnection(connectionString);
+            MySqlConnectionStringBuilder bd = new MySqlConnectionStringBuilder
+            {
+                Server = UTILS.Passwords.SQLAddress,
+                Port = uint.Parse(UTILS.Passwords.SQLPort),
+                UserID = UTILS.Passwords.SQLAccountName,
+                Password = UTILS.Passwords.SQLPassword,
+                Database = UTILS.Passwords.SQLDatabase,
+                ConnectionTimeout = 60
+            };
+
+            ConnectAndSetupAdaptor(bd);
+            GetInternalDataTable(bd);
+            SetupSQLAdaptorCommands();
         }
 
-        public ResultDataSet.resultDataTable GetAllFromDatabase()
+        private void ConnectAndSetupAdaptor(MySqlConnectionStringBuilder bd)
         {
-            var data = ResultAdaptor.GetData();
-            foreach (ResultDataSet.resultRow row in data)
-            {
-                Debug.WriteLine(row.title);
-            }
-
-            return ResultAdaptor.GetData();
+            cnx = new MySqlConnection(bd.ToString());
+            string sqlCmd = "SELECT * FROM result";
+            SQLDataAdaptor = new MySqlDataAdapter(sqlCmd, cnx);
         }
 
-        ResultDataSet.resultRow IDatabaseInterface.GetFromDatabase(string id)
+        private void GetInternalDataTable(MySqlConnectionStringBuilder bd)
         {
-            var rows = ResultAdaptor.GetData().Rows;
-            if (rows.Contains(id))
+            SQLDataAdaptor.SelectCommand.CommandType = CommandType.Text;
+            SQLDataAdaptor.Fill(InternalDataTable);
+            InternalDataTable.PrimaryKey = new DataColumn[] { InternalDataTable.Columns[0] };
+            SqlDataColumns = InternalDataTable.Columns;
+        }
+
+        private void SetupSQLAdaptorCommands()
+        {
+            MySqlCommandBuilder cb = new MySqlCommandBuilder(SQLDataAdaptor);
+            SQLDataAdaptor.InsertCommand = cb.GetInsertCommand();
+            SQLDataAdaptor.DeleteCommand = cb.GetDeleteCommand();
+            SQLDataAdaptor.UpdateCommand = cb.GetUpdateCommand();
+        }
+
+        public DataTable GetAllFromDatabase()
+        {
+            return InternalDataTable;
+        }
+
+        DataRow IDatabaseInterface.GetFromDatabase(string id)
+        {
+            if (InternalDataTable.Rows.Contains(id))
             {
-                return (ResultDataSet.resultRow)rows.Find(id);
+                return InternalDataTable.Rows.Find(id);
             }
             return null;
         }
 
-        public void PutInDatabase(ResultDataSet.resultRow row)
+        public void PutInDatabase(object[] itemArray)
         {
-            if ((this as IDatabaseInterface).GetFromDatabase(row.id) == null)
+            string id = itemArray[0] as string;
+            if (this.InternalDataTable.Rows.Contains(id))
             {
-                object[] dataList = row.ItemArray;
-                ResultAdaptor.Insert(dataList);
-                return;
+                UpdateInDatabase(itemArray);
             }
-            ResultAdaptor.Update(row);
+            InternalDataTable.Rows.Add(itemArray);
+            SQLDataAdaptor.Update(InternalDataTable);
         }
 
-        //I realize you can also do an sql query that basically does the same thing but I decided on this instead.
-        public ResultDataSet.resultDataTable SearchInDatabase(string q)
+        public List<DataRow> SearchInDatabase(string q)
         {
-            ResultDataSet ResultDataSet = new ResultDataSet();
-            ResultAdaptor.Fill(ResultDataSet.result);
-            ResultDataSet newDataSet = new ResultDataSet();
-            for (int i = 0; i < ResultDataSet.result.Rows.Count; i++)
+            List<DataRow> resultRows = new List<DataRow>();
+            for (int i = 0; i < InternalDataTable.Rows.Count; i++)
             {
-                foreach (var column in ResultDataSet.result.Rows[i].ItemArray)
+                foreach (var column in InternalDataTable.Rows[i].ItemArray)
                 {
-                    if (NewDataSetAllreadyContainsKey(i))
+                    if (resultRowsContainsRow(i))
                     {
                         continue;
                     }
@@ -72,16 +107,16 @@ namespace MovieRatingWithDatabase
                     string value = column as string;
                     if (value.ToLower().Contains(q.ToLower()))
                     {
-                        newDataSet.result.Rows.Add(ResultDataSet.result.Rows[i]);
+                        resultRows.Add(InternalDataTable.Rows[i]);
                     }
                 }
             }
 
-            return newDataSet.result;
+            return resultRows;
 
-            bool NewDataSetAllreadyContainsKey(int i)
+            bool resultRowsContainsRow(int i)
             {
-                return newDataSet.result.Rows.Contains(ResultDataSet.result.Rows[i][0]);
+                return resultRows.Contains(InternalDataTable.Rows[i]);
             }
 
             bool IsNotString(object column)
@@ -92,32 +127,24 @@ namespace MovieRatingWithDatabase
 
         public void TryRemoveFromDatabase(string id)
         {
-            ResultAdaptor.DeleteQuery(id);
+            if (!InternalDataTable.Rows.Contains(id))
+            {
+                return;
+            }
+            InternalDataTable.Rows.Remove(InternalDataTable.Rows.Find(id));
+            SQLDataAdaptor.Update(InternalDataTable);
         }
-        public void UpdateInDatabase(ResultDataSet.resultRow resultRow)
+
+        public void UpdateInDatabase(object[] itemArray)
         {
-            //foreach (var c in resultRow.ItemArray)
-            //{
-            //    Debug.WriteLine(c);
-            //}
-            object[] o = resultRow.ItemArray;
-            //int result = ResultAdaptor.UpdateQuery(o);
-            int result = ResultAdaptor.UpdateQuery
-                (
-                (string)o[0],
-                (string)o[1],
-                (string)o[2],
-                (int)o[3],
-                (int)o[4],
-                (string)o[5],
-                (int)o[6],
-                (int)o[7],
-                (int)o[8],
-                (string)o[9],
-                (string)o[10],
-                (DateTime?)o[11]
-                );
-            Debug.WriteLine("Update result: " + result);
+            string id = itemArray[0] as string;
+            if (!InternalDataTable.Rows.Contains(id))
+            {
+                throw new Exception("Row with key: " + itemArray[0] as string + " is not present in the datatable!");
+            }
+            DataRow row = InternalDataTable.Rows.Find(id);
+            row.ItemArray = itemArray;
+            SQLDataAdaptor.Update(InternalDataTable);
         }
     }
 }
