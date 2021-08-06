@@ -34,11 +34,11 @@ namespace MovieRatingWithDatabase
 
         public static object[] ResultItemArray(Result result)
         {
-            if(SQLDatabaseInterface.SqlDataColumns == null)
+            if (SQLDatabaseInterface.SqlDataColumns == null)
             {
                 throw new Exception("SQLSchema was not loaded yet please make sure to load that first.");
             }
-            if(SQLDatabaseInterface.SqlDataColumns.Count == 0)
+            if (SQLDatabaseInterface.SqlDataColumns.Count == 0)
             {
                 throw new Exception("SQLSchema countains no columns.");
             }
@@ -75,7 +75,7 @@ namespace MovieRatingWithDatabase
         }
 
         public static Result RowToResult(DataRow row)
-        {            
+        {
             Result result = new Result();
             string[] propertyNames = new string[row.Table.Columns.Count];
 

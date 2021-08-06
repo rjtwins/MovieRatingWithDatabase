@@ -27,9 +27,9 @@ namespace MovieRatingWithDatabase
             }
             catch (Exception e)
             {
-                throw new Exception("Password File could not be found or could not be loaded at: " + 
+                throw new Exception("Password File could not be found or could not be loaded at: " +
                     baseDir + @"Passwords.end" +
-                    "\n" + e.Message + 
+                    "\n" + e.Message +
                     "\n" + e.StackTrace);
             }
         }

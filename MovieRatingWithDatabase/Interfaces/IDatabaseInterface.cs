@@ -1,5 +1,4 @@
-﻿using MovieRatingWithDatabase;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 
 public interface IDatabaseInterface
@@ -16,6 +15,7 @@ public interface IDatabaseInterface
     /// <param name="id"></param>
     /// <returns>ResultDataSet.resultRow row</returns>
     DataRow GetFromDatabase(string id);
+
     /// <summary>
     /// Put a given row in the database.
     /// </summary>

@@ -1,7 +1,6 @@
 ﻿using MovieRatingWithDatabase;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.Net;
 using System.Threading.Tasks;
@@ -100,6 +99,7 @@ internal abstract class IDataController
     /// <param name="title"></param>
     /// <returns>List<Result> results</Result></returns>
     public abstract List<Result> SearchWebByTitle(string title);
+
     /// <summary>
     /// Stop current and future websearch.
     /// </summary>
@@ -116,6 +116,7 @@ internal abstract class IDataController
     {
         DatabaseInterface.PutInDatabase(UTILS.ResultItemArray(r));
     }
+
     /// <summary>
     /// Update given result in database.
     /// </summary>

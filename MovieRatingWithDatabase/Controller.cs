@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Threading.Tasks;
 
@@ -17,6 +16,7 @@ namespace MovieRatingWithDatabase
         private Dictionary<string, Result> ResultsInMemory = new Dictionary<string, Result>();
         private Dictionary<int, string> SearchIndexToIdDict = new Dictionary<int, string>();
         private BackgroundWorker SearchWorker = new BackgroundWorker();
+
         public Controller(IDisplay Display, IDataController dataController)
         {
             this.Display = Display;
@@ -137,6 +137,7 @@ namespace MovieRatingWithDatabase
             List<Result> results = e.Result as List<Result>;
             FinishAddResultsToBookmarks(e.Result as List<Result>);
         }
+
         private void BitMapWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             Result r = e.Argument as Result;
@@ -180,6 +181,7 @@ namespace MovieRatingWithDatabase
             var results = DataController.GetAllFromDatabase();
             AddResultsToBookmarks(results);
         }
+
         private void SearchWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;

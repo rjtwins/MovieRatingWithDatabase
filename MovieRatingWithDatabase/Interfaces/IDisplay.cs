@@ -33,6 +33,7 @@ internal interface IDisplay
     /// </summary>
     /// <param name="r"></param>
     void DisplayPublicResults(List<Result> r);
+
     /// <summary>
     /// Remove a result from the private results (bookmarks).
     /// </summary>

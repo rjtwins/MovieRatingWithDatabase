@@ -60,8 +60,10 @@ public class Result
     public string title { get; set; }
     public string titleType { get; set; }
     public int year { get; set; }
+
     //public int episode { get; set; }
     public int season { get; set; }
+
     public int rating { get; set; }
     public string notes { get; set; }
     public string watched { get; set; }
